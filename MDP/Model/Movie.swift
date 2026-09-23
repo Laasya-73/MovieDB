@@ -22,13 +22,13 @@ nonisolated struct MovieResponse: Decodable {
 }
 
 nonisolated struct Movie: Decodable {
-    //let adult: Bool
+    let adult: Bool
     let backdropPath: String?
-    //let genreIds: [Int]
+    let genreIds: [Int]
     let id: Int
     let title: String
     let originalLanguage: String
-    //let originalTitle: String
+    let originalTitle: String
     let overview: String
     let popularity: Double
     let posterPath: String?
@@ -39,13 +39,13 @@ nonisolated struct Movie: Decodable {
     let voteCount: Int
     
     enum CodingKeys: String, CodingKey {
-        //case adult
+        case adult
         case backdropPath = "backdrop_path"
-        //case genreIds = "genre_ids"
+        case genreIds = "genre_ids"
         case id
         case title
         case originalLanguage = "original_language"
-        //case originalTitle = "original_title"
+        case originalTitle = "original_title"
         case overview
         case popularity
         case posterPath = "poster_path"

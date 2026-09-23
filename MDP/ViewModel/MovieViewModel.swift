@@ -10,9 +10,13 @@ import Foundation
 //MARK: - Movie ViewModel Protocol
 
 protocol MovieViewModelProtocol: AnyObject {
-    func fetchMoviesFromNetwork(completion: @escaping () -> Void)
+    func fetchMoviesFromNetwork() async
     func getTotalMoviesCount() -> Int
     func getMovie(for index: Int) -> Movie?
+    func searchMovies(with searchText: String)
+    func clearSearch()
+    func isAPIThrownError() -> Bool
+    func getErrorMessage() -> String
 }
 
 // MARK: - Movie ViewModel
@@ -20,26 +24,70 @@ protocol MovieViewModelProtocol: AnyObject {
 class MovieViewModel: MovieViewModelProtocol {
     private var moviesData: MovieResponse?
     private let objNetwork: NetworkProtocol
+    private var apiErrorState: APIError?
+    
+    private var filteredMovies: [Movie] = []
+    private var isSearching: Bool = false
+    private var displayedMovies: [Movie] {
+         if isSearching {
+             return filteredMovies
+         }
+         return moviesData?.results ?? []
+     }
     
     init(objNetwork: NetworkProtocol) {
         self.objNetwork = objNetwork
     }
     
-    func fetchMoviesFromNetwork(completion: @escaping () -> Void) {
-        //let objNetwork: NetworkProtocol = NetworkManager.shared
-        objNetwork.fetchMovies(urlString: Constants.movieDBUrl.rawValue) { [weak self] fetchedMovies in
-            self?.moviesData = fetchedMovies
-            completion()
+    func fetchMoviesFromNetwork() async {
+        let fetchedMoviesResponseState = await objNetwork.fetchMovies(urlString: Constants.movieDBUrl.rawValue)
+        switch fetchedMoviesResponseState {
+        case .success(let response):
+            moviesData = response
+        case .failure(let errorResponse):
+            apiErrorState = errorResponse
         }
     }
     
     func getTotalMoviesCount() -> Int {
-        return moviesData?.results.count ?? 0
+        return displayedMovies.count
     }
     
     func getMovie(for index: Int) -> Movie? {
-        guard let moviesData = moviesData, index < moviesData.results.count else { return nil }
-        return moviesData.results[index]
+        guard index >= 0, index < displayedMovies.count else {
+            return nil
+        }
+        return displayedMovies[index]
+    }
+    
+    func searchMovies(with searchText: String) {
+        let trimmedText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty else {
+            clearSearch()
+            return
+        }
+        
+        isSearching = true
+        let movies = moviesData?.results ?? []
+        filteredMovies = movies.filter { movie in
+            movie.title.localizedCaseInsensitiveContains(trimmedText)
+        }
+    }
+    
+    func clearSearch() {
+        isSearching = false
+        filteredMovies.removeAll()
+    }
+    
+    func isAPIThrownError() -> Bool {
+        guard let _ = apiErrorState else {
+            return false
+        }
+        return true
+    }
+    
+    func getErrorMessage() -> String {
+        apiErrorState?.rawValue ?? ""
     }
 }
 

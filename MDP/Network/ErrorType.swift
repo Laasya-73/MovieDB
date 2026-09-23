@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+//MARK: - ErrorTypes
+
+enum ErrorType: Error {
+    case networkError
+    case invalidURL
+    case badServerResponse(statusCode: Int)
+    case decodingFailed
+}

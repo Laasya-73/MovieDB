@@ -109,4 +109,11 @@ final class MDPTests: XCTestCase {
         let movies = movieViewModel?.getMovie(for: 0)
         XCTAssertNil(movies)
     }
+    
+    func testFetchMovies() {
+        movieViewModel?.fetchMoviesFromNetwork { }
+        XCTAssertTrue(movieViewModel?.getTotalMoviesCount() ?? 0 > 0)
+    }
+    
+    
 }

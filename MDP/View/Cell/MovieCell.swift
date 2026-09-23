@@ -13,36 +13,67 @@ class MovieCell: UITableViewCell {
     
     static let identifier = Constants.movieCell.rawValue
     
-    let containerView: UIView = {
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        return container
+    let cardView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 18
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.10
+        view.layer.shadowRadius = 8
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        return view
     }()
-    
-    let movieImage: UIImageView = {
-        let image = UIImageView()
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleAspectFit
-        image.layer.cornerRadius = 8
-        image.clipsToBounds = true
-        return image
+
+    let accentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemIndigo
+        view.layer.cornerRadius = 2
+        return view
     }()
-    
-    let movieTitle: UILabel = {
+
+    var movieImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 14
+        imageView.image = UIImage(systemName: Constants.defaultImage.rawValue)
+        return imageView
+    }()
+
+    var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17, weight: .medium)
-        label.textColor = .black
-        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.textColor = .label
+        label.numberOfLines = 2
         return label
     }()
-    
-    let movieRating: UILabel = {
+
+    let ratingView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.15)
+        view.layer.cornerRadius = 12
+        return view
+    }()
+
+    var ratingLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.textColor = .systemOrange
+        return label
+    }()
+
+    var descriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 15, weight: .regular)
-        label.textColor = .black
-        label.numberOfLines = 0
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 5
         return label
     }()
     
@@ -59,74 +90,68 @@ class MovieCell: UITableViewCell {
     //MARK: - User Defined Methods
     
     func setupUI() {
-        contentView.addSubview(containerView)
-        containerView.addSubview(movieImage)
-        containerView.addSubview(movieTitle)
-        containerView.addSubview(movieRating)
+        backgroundColor = .clear
+        selectionStyle = .none
+        contentView.addSubview(cardView)
+        cardView.addSubview(movieImageView)
+        cardView.addSubview(accentView)
+        cardView.addSubview(titleLabel)
+        cardView.addSubview(ratingView)
+        ratingView.addSubview(ratingLabel)
+        cardView.addSubview(descriptionLabel)
         
         setupConstraints()
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+
+            movieImageView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 14),
+            movieImageView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 14),
+            movieImageView.widthAnchor.constraint(equalToConstant: 120),
+            movieImageView.heightAnchor.constraint(equalToConstant: 180),
+            movieImageView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -14),
+
+            accentView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 18),
+            accentView.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 16),
+            accentView.widthAnchor.constraint(equalToConstant: 4),
+            accentView.heightAnchor.constraint(equalToConstant: 25),
+
+            titleLabel.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: accentView.trailingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
+
+            ratingView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 14),
+            ratingView.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 16),
             
-            movieImage.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 14),
-            movieImage.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            movieImage.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
-            movieImage.widthAnchor.constraint(equalToConstant: 100),
-            movieImage.heightAnchor.constraint(equalToConstant: 140),
-            
-            movieTitle.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            movieTitle.leadingAnchor.constraint(equalTo: movieImage.trailingAnchor, constant: 12),
-            movieTitle.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -12),
-            
-            movieRating.topAnchor.constraint(equalTo: movieTitle.bottomAnchor, constant: 10),
-            movieRating.leadingAnchor.constraint(equalTo: movieTitle.leadingAnchor),
-            movieRating.trailingAnchor.constraint(equalTo: movieTitle.trailingAnchor),
-            movieRating.bottomAnchor.constraint(equalTo: containerView.bottomAnchor,constant: -12)
+            ratingLabel.topAnchor.constraint(equalTo: ratingView.topAnchor, constant: 6),
+            ratingLabel.bottomAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: -6),
+            ratingLabel.leadingAnchor.constraint(equalTo: ratingView.leadingAnchor, constant: 10),
+            ratingLabel.trailingAnchor.constraint(equalTo: ratingView.trailingAnchor, constant: -10),
+
+            descriptionLabel.topAnchor.constraint(equalTo: ratingView.bottomAnchor, constant: 14),
+            descriptionLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 16),
+            descriptionLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -14),
+            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: cardView.bottomAnchor, constant: -14)
         ])
     }
 }
 
-//MARK: - Helper Methods
+// MARK: - Helper Method
 
 extension MovieCell {
-    func configure(with movie: Movie?) {
-        movieTitle.text = movie?.title
-        movieRating.text = "\(Constants.ratingLabel.rawValue) \(movie?.voteAverage ?? 0)"
-        movieImage.image = UIImage(systemName: Constants.defaultImage.rawValue)
-        guard let posterPath = movie?.posterPath else {
-            return
-        }
-        let imageURLString = Constants.baseImageUrl.rawValue + posterPath
-        loadMovieImage(from: imageURLString)
-    }
-    
-    func loadMovieImage(from urlString: String) {
-        guard let imageURL = URL(string: urlString) else {
-            return
-        }
-        
-        URLSession.shared.dataTask(with: imageURL) { [weak self] data, response, error in
-            if let error = error {
-                print("Failed to load image: \(error.localizedDescription)")
-                return
-            }
-
-            guard let imageData = data, let downloadedImage = UIImage(data: imageData) else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self?.movieImage.image = downloadedImage
-            }
-        }.resume()
+    func update(with movie: Movie) {
+        titleLabel.text = movie.title
+        descriptionLabel.text = movie.overview
+        ratingLabel.text = "★ \(String(format: "%.1f", movie.voteAverage))"
+        movieImageView.downloadImage(from: movie.posterPath)
     }
 }
+
 
 /*
  Because MovieCell is registered using MovieCell.self, the table view creates the cell programmatically. Therefore I set up the cell UI inside init(style:reuseIdentifier:). If the cell were coming from a storyboard or XIB, then awakeFromNib() would be appropriate.
